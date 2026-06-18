@@ -1,26 +1,64 @@
 @import "tailwindcss";
 
+/* ── Light theme — warm milk ──────────────────────────────── */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --bg: #F7F4EF;
+  --surface: #F0ECE4;
+  --surface2: #E8E2D8;
+  --surface-hover: rgba(80, 60, 20, 0.05);
+  --border: #DDD8CE;
+  --border-hover: #C4BDB1;
+  --text: #1C1814;
+  --muted: #5C5449;
+  --muted2: #9E9589;
+  --accent: #7C6FF0;
+}
+
+/* ── Dark theme — warm coal ───────────────────────────────── */
+.dark {
+  --bg: #18160F;
+  --surface: #211E16;
+  --surface2: #2A271E;
+  --surface-hover: rgba(255, 240, 200, 0.04);
+  --border: #35312A;
+  --border-hover: #4A4640;
+  --text: #EDE8DF;
+  --muted: #8E8880;
+  --muted2: #5E5A54;
+  --accent: #7C6FF0;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-surface2: var(--surface2);
+  --color-text: var(--text);
+  --color-muted: var(--muted);
+  --color-muted2: var(--muted2);
+  --color-accent: var(--accent);
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: ui-monospace, "Courier New", monospace;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: var(--bg);
+  color: var(--text);
+  font-family: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+}
+
+@keyframes blob {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33%       { transform: translate(30px, -50px) scale(1.08); }
+  66%       { transform: translate(-20px, 20px) scale(0.93); }
+}
+
+/* Respect reduced-motion preference for CSS transitions */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }
