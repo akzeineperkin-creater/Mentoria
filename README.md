@@ -1,36 +1,158 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Mentoria Hub
 
-## Getting Started
+EdTech-платформа для школьников 8–11 классов Казахстана: каталог образовательных возможностей, курсы, AI-ассистент с персональными рекомендациями, календарь дедлайнов и напоминания в Telegram.
 
-First, run the development server:
+Проект создан для хакатона **Mentoria Hub**.
+
+---
+
+## Проблема
+
+Школьники в Казахстане теряются в потоке олимпиад, стипендий, стажировок и конкурсов: информация разбросана, дедлайны пропускаются, непонятно, что подходит именно тебе. Mentoria Hub собирает возможности в одном месте, подбирает их под профиль ученика и напоминает о дедлайнах.
+
+---
+
+## Возможности
+
+- **Каталог возможностей** — олимпиады, стипендии, стажировки, конкурсы и мероприятия с фильтрами по категории, формату и классу + поиск по ключевым словам.
+- **AI-ассистент** — рекомендует возможности на основе профиля ученика (класс, интересы).
+- **Онбординг** — после регистрации ученик указывает имя, класс и интересы; на их основе строятся рекомендации.
+- **Личный кабинет** — профиль, избранное, прогресс.
+- **Курсы** — асинхронные курсы с отслеживанием прохождения.
+- **Календарь дедлайнов** — дедлайны из избранных возможностей, отсортированные по дате.
+- **Напоминания в Telegram** — кнопка «Напомнить в Telegram» присылает в чат список дедлайнов из избранного.
+- **Админ-панель / портал менторов** — управление контентом.
+
+---
+
+## Технологии
+
+| Слой | Стек |
+|------|------|
+| Фреймворк | Next.js 16 (App Router) |
+| Язык | TypeScript |
+| Стили | Tailwind CSS, shadcn/ui |
+| Состояние | Zustand (с persist в localStorage) |
+| Иконки | lucide-react |
+| Анимации | framer-motion |
+| Данные | Mock JSON / `data/opportunities.ts` |
+| Деплой | Vercel |
+| Интеграции | Telegram Bot API |
+
+**Дизайн:** тёмный минимализм, чёрно-серая палитра, шрифт Space Grotesk. Цветовые токены вынесены в `globals.css`.
+
+---
+
+## Запуск локально
 
 ```bash
+# 1. Установить зависимости
+npm install
+
+# 2. Создать .env.local (см. раздел «Переменные окружения»)
+
+# 3. Запустить dev-сервер
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Открыть [http://localhost:3000](http://localhost:3000).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+# Production-сборка
+npm run build
+npm run start
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+---
 
-## Learn More
+## Переменные окружения
 
-To learn more about Next.js, take a look at the following resources:
+Создай файл `.env.local` в корне проекта:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```env
+TELEGRAM_BOT_TOKEN=your_bot_token_here
+NEXT_PUBLIC_TELEGRAM_BOT_USERNAME=your_bot_username
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- `TELEGRAM_BOT_TOKEN` — токен бота из [@BotFather](https://t.me/BotFather). Секретный, только сервер, **без** префикса `NEXT_PUBLIC_`.
+- `NEXT_PUBLIC_TELEGRAM_BOT_USERNAME` — username бота без `@`.
 
-## Deploy on Vercel
+Те же переменные нужно добавить в Vercel → Settings → Environment Variables.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+---
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Настройка Telegram-бота
+
+Бот работает по схеме «напоминание по нажатию»: пользователь подключает Telegram на сайте и получает дедлайны из избранного в чат.
+
+> ⚠️ Бот работает только на задеплоенном HTTPS-домене (Vercel). На localhost webhook недоступен.
+
+1. Создать бота через [@BotFather](https://t.me/BotFather) → `/newbot`, получить токен.
+2. Прописать токен и username в переменные окружения.
+3. Задеплоить проект на Vercel.
+4. Установить webhook (один раз), открыв в браузере:
+   ```
+   https://api.telegram.org/bot<ТОКЕН>/setWebhook?url=https://<домен>.vercel.app/api/telegram
+   ```
+   Ожидаемый ответ: `{"ok":true,"result":true,"description":"Webhook was set"}`
+5. В боте отправить `/start`, получить `chat_id`, вставить его на сайте — и нажать «Напомнить в Telegram».
+
+---
+
+## Структура (основное)
+
+```
+app/
+  dashboard/        # Главная (приветствие, карточки, недавние возможности)
+  catalog/          # Каталог возможностей
+  courses/          # Курсы
+  calendar/         # Календарь дедлайнов
+  assistant/        # AI-ассистент
+  onboarding/       # Онбординг после регистрации
+  admin/            # Админ-панель (доступ только для роли admin)
+  api/
+    telegram/       # Webhook бота + отправка напоминаний
+components/         # UI-компоненты
+lib/
+  recommend.ts      # Логика рекомендаций, форматирование дедлайнов
+  types.ts          # Типы (Opportunity и др.)
+store/              # Zustand store
+data/               # Mock-данные возможностей
+```
+
+---
+
+## Как использовали AI
+
+Проект разрабатывался с активным использованием AI-инструментов:
+
+- **Claude (чат)** — планирование архитектуры, декомпозиция задач, генерация подробных контекстных промптов для последующей реализации.
+- **Claude Code (VS Code)** — реализация компонентов, страниц и API-роутов по промптам, рефакторинг, исправление багов.
+- Внутри продукта **AI-ассистент** помогает ученику подобрать релевантные возможности по его профилю.
+
+Рабочий процесс: формулировка задачи в чате → генерация context-rich промпта → реализация в Claude Code → проверка и итерации.
+
+---
+
+## Дальнейшее развитие (roadmap)
+
+- Автоматические напоминания о дедлайнах по расписанию (Vercel Cron + база данных)
+- Напоминания на email
+- Лидерборд за прохождение курсов
+- Сертификаты после завершения курса
+- Светлая/тёмная тема
+- Мультиязычный интерфейс: казахский, русский, английский
+- Конструктор индивидуального roadmap по классам (9–12)
+
+## YouTube Demo
+-https://youtu.be/28TSTQV85K0?si=ccFNgJZbxm5N-Ycx
+## Hosting
+-https://mentoria-dun.vercel.app/
+
+## Команда
+-Nexra(точно не помню)
+
+## Эл. почта
+-akzeineperkin@gmail.com
+
+Mentoria Hub — проект для хакатона Mentoria Hub, 2026.
