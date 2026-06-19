@@ -154,5 +154,7 @@ data/               # Mock-данные возможностей
 
 ## Эл. почта
 -akzeineperkin@gmail.com
-
+## Для регистрации исользуйте эту эл почты:
+-akzeineperkin@gmail.com
+-пароль: Beknazar2021(для панели админов) 
 Mentoria Hub — проект для хакатона Mentoria Hub, 2026.
